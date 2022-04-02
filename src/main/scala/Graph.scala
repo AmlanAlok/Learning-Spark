@@ -85,18 +85,41 @@ object Graph {
     return newList
   }
 
+  def f6(x: (Int, (Int, Iterable[(Int)]))): List[(Int, (Int, Iterable[(Int)]))] = {
+
+    val k = x._1
+    val value = x._2
+    val d = value._1
+    val nodes = value._2
+    var newList = List.empty[(Int, (Int, Iterable[Int]))]
+//    val emptyList = List.empty[()]
+    val emptyList = List.empty[(Int)]
+
+    newList :+= x
+
+    if (d < max_int) {
+      for (i<-nodes){
+        newList :+= (i, (d+1, emptyList))
+      }
+    }
+
+    println("newList ="+newList)
+    return newList
+
+  }
+
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("Graph")
     val sc = new SparkContext(conf)
     val lines = sc.textFile(args(0))
 
-    val kvPairs = lines.map(line => lineToKeyValue(line))
+    val kvPairs = lines.map(line => lineToKeyValue(line)).groupByKey()
     println("kvPairs")
     kvPairs.collect().foreach(println)
 
 //    kvPairs.flatMap(x => (x._1, x._2)).collect().foreach(println)
 
-    val followerList = kvPairs.groupByKey().map(x => f2(x._1,x._2)).sortByKey()       // sort can be removed. Just added for output clarity
+    val followerList = kvPairs.map(x => f2(x._1,x._2)).sortByKey()       // sort can be removed. Just added for output clarity
     println("followerList")
     followerList.collect().foreach(println)
 //
@@ -110,13 +133,17 @@ object Graph {
 //    println("polo")
 //    polo.collect().foreach(println)
 
-    val polo = join1.groupByKey()
-    println("polo")
-    polo.collect().foreach(println)
+//    val polo = join1.groupByKey()
+//    println("polo")
+//    polo.collect().foreach(println)
 
-    val updateDist = polo.flatMap(x => f5(x))
-    println("updateDist")
-    updateDist.collect().foreach(println)
+//    val updateDist = polo.flatMap(x => f5(x))
+//    println("updateDist")
+//    updateDist.collect().foreach(println)
+
+      val updateDist = join1.flatMap(x => f6(x))
+      println("updateDist")
+      updateDist.collect().foreach(println)
 
 
 
