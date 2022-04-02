@@ -105,6 +105,28 @@ object Graph {
 
     println("newList ="+newList)
     return newList
+  }
+
+  def f7(x: (Int, Iterable[Int]), y:  (Int, Iterable[Int])):  (Int, Iterable[Int])={
+
+    var d = 0
+//    var p: Iterable[Int]
+
+    if (x._1 < y._1) {
+      d = x._1
+    }
+    else{
+      d = y._1
+    }
+
+    if (x._2.isEmpty){
+//      p = y._2
+      return (d, y._2)
+    }
+    else{
+//      p = x._2
+      return (d, x._2)
+    }
 
   }
 
@@ -141,9 +163,14 @@ object Graph {
 //    println("updateDist")
 //    updateDist.collect().foreach(println)
 
-      val updateDist = join1.flatMap(x => f6(x))
-      println("updateDist")
-      updateDist.collect().foreach(println)
+    val updateDist = join1.flatMap(x => f6(x))
+    println("updateDist")
+    updateDist.collect().foreach(println)
+
+    val red = updateDist.reduceByKey((x,y) => f7(x,y))
+    println("reduce")
+    red.collect().foreach(println)
+
 
 
 
