@@ -14,55 +14,123 @@ object Graph {
     return (a(1).toInt, a(0).toInt)
   }
 
-  def f2(k: Int, v: Iterable[Int]): (Int, (Int, Iterable[Int])) = {
-    println("k="+k+", v="+v)
-
+//  def f2(k: Int, v: Iterable[Int]): (Int, (Int, Iterable[Int])) = {
+  def f2(k: Int, v: Iterable[Int]): (Int, Int) = {
+//    println("k="+k+", v="+v)
     if (k==1){
-      return (k, (0, v))
+//      return (k, (0, v))
+      return (k, 0)
     }
     else{
-      return (k, (max_int, v))
+//      return (k, (max_int, v))
+      return (k, max_int)
     }
   }
 
   def f3(k:Int, x:  (Int, Iterable[Int])): Any = {
-    println("in k ="+k)
+//    println("in k ="+k)
     val following = x._2.toList
     if (x._1 < max_int){
 //      x._2.foreach {
 //        println
 //        return (_, (x._1 + 1))
 //      }
-      println("following ="+following)
+//      println("following ="+following)
 
       for (i <- following){
-        println("i="+i)
+//        println("i="+i)
         return (i, (x._1 + 1))
       }
     }
   }
 
+//  f4(distance: Int, node: Int) = {
+//    println("d ="+distance+", node ="+node)
+//    return List(node, distance)
+//  }
+
+  def f4(x: (Int, (Int, Int))): List[(Int, Int)] = {
+//    println("d ="+distance+", node ="+node)
+//    return List(node, distance)
+    println("Inside f4")
+    println("k =", x._1)
+    println(x)
+    return List(x._2)
+  }
+
+  def f5(x: (Int, Iterable[(Int, Int)])): List[(Int, (Int, Int))] = {
+
+    val nums = x._2.toList
+    var newList = List.empty[(Int, (Int, Int))]
+    val k =x._1
+
+    for (i<-nums){
+
+      val d = i._1
+      val node = i._2
+
+      println("d="+d+", node = "+node)
+
+      if (d<max_int){
+//        if (d==0){
+//          newList :+= (x._1, d)
+//        }
+        newList :+= (k, (node, d+1))
+      }
+      else{
+        newList :+= (k, (node, d))
+      }
+    }
+    println("newList ="+newList)
+    return newList
+  }
+
   def main(args: Array[String]): Unit = {
-    val conf = new SparkConf().setAppName("SimpleGraph")
+    val conf = new SparkConf().setAppName("Graph")
     val sc = new SparkContext(conf)
     val lines = sc.textFile(args(0))
 
     val kvPairs = lines.map(line => lineToKeyValue(line))
+    println("kvPairs")
     kvPairs.collect().foreach(println)
 
+//    kvPairs.flatMap(x => (x._1, x._2)).collect().foreach(println)
+
     val followerList = kvPairs.groupByKey().map(x => f2(x._1,x._2)).sortByKey()       // sort can be removed. Just added for output clarity
+    println("followerList")
     followerList.collect().foreach(println)
-
-//    for (i <- 0 to iterations){
-//      println("For i = "+i)
-//    }
 //
-//    val join1 = followerList.join(kvPairs)
-//    join1.collect().foreach(println)
+//
+    val join1 = followerList.join(kvPairs)
+    println("join1")
+    join1.collect().foreach(println)
+
+//    val polo = join1.flatMap(x => f4(x._2._1, x._2._2))
+//    val polo = join1.flatMap(x => f4(x))
+//    println("polo")
+//    polo.collect().foreach(println)
+
+    val polo = join1.groupByKey()
+    println("polo")
+    polo.collect().foreach(println)
+
+    val updateDist = polo.flatMap(x => f5(x))
+    println("updateDist")
+    updateDist.collect().foreach(println)
 
 
-    val p = followerList.map(x => f3(x._1, x._2))
-    p.collect().foreach(println)
+
+//    val rdk = join1.reduceByKey(_+_)
+//    rdk.collect().foreach(println)
+
+
+
+    //    for (i <- 0 to iterations){
+    //      println("For i = "+i)
+    //    }
+    //
+//    val p = followerList.map(x => f3(x._1, x._2))
+//    p.collect().foreach(println)
 
 //
 //    val j2 = kvPairs.join(followerList)
@@ -70,6 +138,7 @@ object Graph {
 
 //    val r = kvPairs.reduceByKey(_+_)
 //    r.collect().foreach(println)
+
   }
  
 //  def main ( args: Array[ String ] ) {
