@@ -144,35 +144,26 @@ object Graph {
     val followerList = kvPairs.map(x => f2(x._1,x._2)).sortByKey()       // sort can be removed. Just added for output clarity
     println("followerList")
     followerList.collect().foreach(println)
-//
-//
-    val join1 = followerList.join(kvPairs)
+
+    var join1 = followerList.join(kvPairs)
     println("join1")
     join1.collect().foreach(println)
 
-//    val polo = join1.flatMap(x => f4(x._2._1, x._2._2))
-//    val polo = join1.flatMap(x => f4(x))
-//    println("polo")
-//    polo.collect().foreach(println)
+    for (i <- 0 to iterations){
+      println("For i = "+i)
 
-//    val polo = join1.groupByKey()
-//    println("polo")
-//    polo.collect().foreach(println)
+      join1 = join1.flatMap(x => f6(x)).reduceByKey((x,y) => f7(x,y))
+      println("updateDist")
+      join1.collect().foreach(println)
 
-//    val updateDist = polo.flatMap(x => f5(x))
-//    println("updateDist")
-//    updateDist.collect().foreach(println)
-
-    val updateDist = join1.flatMap(x => f6(x))
-    println("updateDist")
-    updateDist.collect().foreach(println)
-
-    val red = updateDist.reduceByKey((x,y) => f7(x,y))
-    println("reduce")
-    red.collect().foreach(println)
-
-
-
+//      val updateDist = join1.flatMap(x => f6(x))
+//      println("updateDist")
+//      updateDist.collect().foreach(println)
+//
+//      val red = updateDist.reduceByKey((x,y) => f7(x,y))
+//      println("reduce")
+//      red.collect().foreach(println)
+    }
 
 //    val rdk = join1.reduceByKey(_+_)
 //    rdk.collect().foreach(println)
