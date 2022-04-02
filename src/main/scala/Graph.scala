@@ -155,15 +155,16 @@ object Graph {
       join1 = join1.flatMap(x => f6(x)).reduceByKey((x,y) => f7(x,y))
       println("updateDist")
       join1.collect().foreach(println)
-
-//      val updateDist = join1.flatMap(x => f6(x))
-//      println("updateDist")
-//      updateDist.collect().foreach(println)
-//
-//      val red = updateDist.reduceByKey((x,y) => f7(x,y))
-//      println("reduce")
-//      red.collect().foreach(println)
     }
+
+    val filterOutput = join1.filter(x => x._2._1 < max_int)
+      .map(x => (x._2._1, 1))
+      .reduceByKey(_+_)
+      .sortByKey()
+    println("filterOutput")
+    filterOutput.collect().foreach(println)
+
+
 
 //    val rdk = join1.reduceByKey(_+_)
 //    rdk.collect().foreach(println)
