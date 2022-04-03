@@ -64,7 +64,8 @@ object Graph {
     val sc = new SparkContext(conf)
     val lines = sc.textFile(args(0))
 
-    val kvFollowerList = lines.map(line => lineToKeyValue(line)).groupByKey()
+    val kvFollowerList = lines.map(line => lineToKeyValue(line))
+                              .groupByKey()
 //    println("kvFollowerList")
 //    kvFollowerList.collect().foreach(println)
 
