@@ -1,7 +1,7 @@
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 
-//      spark-submit --class Graph target/cse6331-project5-0.1.jar small-graph.csv
+
 object Graph {
   val start_id = 14701391
   val max_int = Int.MaxValue
@@ -75,7 +75,8 @@ object Graph {
     //    println("join")
     //    join.collect().foreach(println)
 
-    for (i <- 0 to iterations){
+    for (i <- 0 until iterations){
+//      println("Interation ="+i)
       join = join.flatMap(x => assignNewDistance(x))
         .reduceByKey((x,y) => chooseMinDistance(x,y))
       //      join.collect().foreach(println)
