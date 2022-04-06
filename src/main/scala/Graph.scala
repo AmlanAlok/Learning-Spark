@@ -1,8 +1,6 @@
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkConf
 
-//  ~/spark-3.1.2-bin-hadoop3.2/bin/spark-submit --class Graph target/*.jar small-graph.csv
-//      ~/spark-3.1.2-bin-hadoop3.2/bin/spark-submit --class Graph target/cse6331-project5-0.1.jar small-graph.csv
 //      spark-submit --class Graph target/cse6331-project5-0.1.jar small-graph.csv
 object Graph {
   val start_id = 14701391
@@ -16,7 +14,7 @@ object Graph {
 
   def getDistance(k: Int): (Int, Int) = {
 
-    if (k==1)
+    if (k==1 || k == start_id)
       return (k, 0)
     else
       return (k, max_int)
@@ -39,7 +37,7 @@ object Graph {
       }
     }
 
-//    println("newList ="+newList)
+    //    println("newList ="+newList)
     return newList
   }
 
@@ -65,29 +63,32 @@ object Graph {
     val lines = sc.textFile(args(0))
 
     val kvFollowerList = lines.map(line => lineToKeyValue(line))
-                              .groupByKey()
-//    println("kvFollowerList")
-//    kvFollowerList.collect().foreach(println)
+      .groupByKey()
+    //    println("kvFollowerList")
+    //    kvFollowerList.collect().foreach(println)
 
     val kvDistance = kvFollowerList.map(x => getDistance(x._1))
-//    println("kvDistance")
-//    kvDistance.collect().foreach(println)
+    //    println("kvDistance")
+    //    kvDistance.collect().foreach(println)
 
     var join = kvDistance.join(kvFollowerList)
-//    println("join")
-//    join.collect().foreach(println)
+    //    println("join")
+    //    join.collect().foreach(println)
 
     for (i <- 0 to iterations){
       join = join.flatMap(x => assignNewDistance(x))
-                  .reduceByKey((x,y) => chooseMinDistance(x,y))
-//      join.collect().foreach(println)
+        .reduceByKey((x,y) => chooseMinDistance(x,y))
+      //      join.collect().foreach(println)
     }
 
     val filterOutput = join.filter(x => x._2._1 < max_int)
-                            .map(x => (x._2._1, 1))
-                            .reduceByKey(_+_)
-                            .sortByKey()
-                            .collect().foreach(println)
+      .map(x => (x._2._1, 1))
+      .reduceByKey(_+_)
+      .sortByKey()
+    //                            .collect().foreach(println)
 
+    println("Printing output")
+    filterOutput.collect().foreach(println)
+    println("Printing output completed ------------")
   }
 }
