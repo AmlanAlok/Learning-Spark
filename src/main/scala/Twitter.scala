@@ -11,9 +11,19 @@ object Twitter {
     import spark.implicits._
 
     /* Reading data from data source */
-    val inputData = spark.read.csv(args(0))
-    inputData.show()
+//    val inputData = spark.read.csv(args(0))
+////      .as[Follows]
 
+    val in = spark.sparkContext.textFile(args(0))
+      .map(_.split(",")).map(x => Follows(x(0).toInt, x(1).toInt)).toDF()
+
+    in.show()
+    in.printSchema()
+
+
+
+
+//    dataframe.write.csv("path")
 
   }
 }
