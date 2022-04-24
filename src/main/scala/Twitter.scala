@@ -9,7 +9,6 @@ object Twitter {
     val conf = new SparkConf().setAppName("Twitter")
     val spark = SparkSession.builder().config(conf).getOrCreate()
 
-    /** This import is needed to use the $-notation */
     import spark.implicits._
 
     /* Reading data from data source */
@@ -50,10 +49,6 @@ object Twitter {
       "ORDER BY y.no_of_users_followed")
 
     output2.show()
-
-
-
-//    dataframe.write.csv("path")
 
   }
 }
