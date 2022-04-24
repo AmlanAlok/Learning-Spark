@@ -50,5 +50,7 @@ object Twitter {
 
     output2.show()
 
+    output2.collect().foreach(println)
+
   }
 }
