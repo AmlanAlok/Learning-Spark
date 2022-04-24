@@ -10,8 +10,7 @@ object Twitter {
     val spark = SparkSession.builder().config(conf).getOrCreate()
     import spark.implicits._
 
-    /* ... */
-
+    /* Reading data from data source */
     val inputData = spark.read.csv(args(0))
     inputData.show()
 
