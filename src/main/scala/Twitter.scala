@@ -11,25 +11,12 @@ object Twitter {
 
     import spark.implicits._
 
-    /* Reading data from data source */
-//    val inputData = spark.read.csv(args(0))
-////      .as[Follows]
-
     val inputDF = spark.sparkContext.textFile(args(0))
       .map(_.split(",")).map(x => Follows(x(0).toInt, x(1).toInt)).toDF()
 
-    println("-----------"+inputDF.getClass)
+//    println("-----------"+inputDF.getClass)
     inputDF.show()
     inputDF.printSchema()
-
-//    val x1 = inputDF.groupBy("follower").count()
-//    x1.show()
-//
-//    val x2 = x1.withColumnRenamed("count", "follower_count")
-//    x2.show()
-//
-//    val x3 = x2.groupBy("follower_count").count()
-//    x3.show()
 
     inputDF.createOrReplaceTempView("X")
 
@@ -38,7 +25,7 @@ object Twitter {
       "FROM X x " +
       "GROUP BY x.follower")
     println("-----------"+output1.getClass)
-    output1.show()
+//    output1.show()
 
     output1.createOrReplaceTempView("Y")
 
@@ -48,7 +35,7 @@ object Twitter {
       "GROUP BY y.no_of_users_followed " +
       "ORDER BY y.no_of_users_followed")
 
-    output2.show()
+//    output2.show()
 
     output2.collect().foreach(println)
 
